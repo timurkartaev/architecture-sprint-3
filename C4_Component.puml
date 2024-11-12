@@ -1,0 +1,84 @@
+@startuml
+title TepliyDom Web Application Component Diagram
+
+top to bottom direction
+skinparam linetype ortho
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(TepliyDom, "TepliyDom Microservices System") {
+  Container(DeviceManagement, "DeviceManagement", "Java, Spring", "Handles user interactions")
+  Container(DeviceScenario, "Device Scenario", "Java, Spring", "Handles user interactions")
+  Container(UsersManagement, "Users Management", "Java, Spring", "Handles user interactions")
+  Container(Monitoring, "Analytics and Monitoring", "Java, Spring", "Handles user interactions")
+  Container(TechnicalSupport, "Technical Support", "Java, Spring", "Handles user interactions")
+
+  Container(DMDatabase, "Device Management Database", "PostgreSQL", "Stores device data")
+  Container(DSDatabase, "Device Scenario Database",   "PostgreSQL", "Stores device scenario data")
+  Container(MDatabase, "Users Management Database",  "PostgreSQL", "Stores user data")
+  Container(UMDatabase, "Users Management Database",  "PostgreSQL", "Stores user data")
+  Container(TSDatabase, "Technical Support Database", "PostgreSQL", "Stores technical support")
+}
+
+Container(DeviceManagement, "DeviceManagement", "Java, Spring") {
+  Component(DeviceRegister, "Device Register", "Register new device")
+  Component(DeviceManage, "Manage Device", "Manage device")
+  Component(DeviceMetrics, "Capture Device metrics", "Save/Capture device metrics")
+  Component(DMServiceLayer, "Service Layer", "Business logic")
+  Component(DMRepositoryLayer, "Repository Layer", "Data access logic")
+}
+
+Container(DeviceScenario, "Device Scenario", "Java, Spring") {
+  Component(CRUDDeviceScenario, "CRUD Device Scenario", "Create/Update/Delete Scenario")
+  Component(StartDeviceScenario, "Start Device Scenario", "Execute/Start Scenario")
+  Component(DSServiceLayer, "Service Layer", "Business logic")
+  Component(DSRepositoryLayer, "Repository Layer", "Data access logic")
+}
+
+Container(Monitoring, "Monitoring", "Java, Spring") {
+  Component(CreateReport,  "Create usage report", "Reporting module")
+  Component(AnalyzeDeviceData, "Analyze Consumption", "Analyze device/sensors metrics")
+  Component(MServiceLayer, "Service Layer", "Business logic")
+  Component(MRepositoryLayer, "Repository Layer", "Data access logic")
+}
+
+Container(UsersManagement, "Monitoring", "Java, Spring") {
+  Component(RegisterUser, "User Registration", "New user registration")
+  Component(AddUserDevice, "Add new usage device", "Add new user device")
+  Component(UMServiceLayer, "Service Layer", "Business logic")
+  Component(UMRepositoryLayer, "Repository Layer", "Data access logic")
+}
+
+Container(TechnicalSupport, "Monitoring", "Java, Spring") {
+  Component(CreateSupportTicket, "Create a support ticket", "Help users to overcome problems :)")
+  Component(TSServiceLayer, "Service Layer", "Business logic")
+  Component(TSRepositoryLayer, "Repository Layer", "Data access logic")
+}
+
+Rel(DeviceRegister, DMServiceLayer, "Calls business logic")
+Rel(DeviceManage, DMServiceLayer, "Calls business logic")
+Rel(DeviceMetrics, DMServiceLayer, "Calls business logic")
+Rel(DMServiceLayer, DMRepositoryLayer,"Reads/Writes data")
+Rel(DMRepositoryLayer, DMDatabase,"Reads/Writes device data")
+
+Rel(CRUDDeviceScenario, DSServiceLayer, "Calls business logic")
+Rel(StartDeviceScenario, DSServiceLayer, "Calls business logic")
+Rel(DSServiceLayer, DSRepositoryLayer, "Reads/Writes data")
+Rel(DSRepositoryLayer, DSDatabase,"Reads/Writes user data")
+
+Rel(CreateReport, MServiceLayer,"Calls business logic")
+Rel(AnalyzeDeviceData, MServiceLayer,"Calls business logic")
+Rel(MServiceLayer, MRepositoryLayer,"Reads/Writes data")
+Rel(MRepositoryLayer, MDatabase,"Reads/Writes user data")
+
+Rel(RegisterUser, UMServiceLayer, "Calls business logic")
+Rel(AddUserDevice, UMServiceLayer,"Calls business logic")
+Rel(UMServiceLayer, UMRepositoryLayer,"Reads/Writes data")
+Rel(UMRepositoryLayer, UMDatabase,"Reads/Writes user data")
+
+Rel(CreateSupportTicket, TSServiceLayer,"Calls business logic")
+Rel(TSServiceLayer, TSRepositoryLayer,"Reads/Writes data")
+Rel(TSRepositoryLayer, TSDatabase,"Reads/Writes user data")
+
+
+@enduml

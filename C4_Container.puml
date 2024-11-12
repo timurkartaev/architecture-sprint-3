@@ -1,0 +1,66 @@
+@startuml
+title "Теплый Дом" Container Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+AddRelTag("dashedLine", $lineStyle = DashedLine())
+
+Person(user, "User", "A user of the fitness club system")
+Person(admin, "Administrator", "An administrator managing the system")
+System(TepliyDom, "Tepliy Dom", "")
+
+Container_Boundary(TepliyDom, "FitLife System") {
+  Container(ApiGateway, "API Gateway", "Kong", "Handles all incoming requests")
+  SystemQueue(Queue, "Kafka Queue", "Kafka brokers managing all topics. Pub/Sub model")
+
+  Container(DeviceManagement, "Device Control", "Java, Spring", "Manages devices")
+  Container(DeviceScenario, "Device Scenario", "Java, Spring", "Manages Device Scenario")
+  Container(Monitoring, "Analytics and Monitoring", "Java, Spring", "Allows monitoring")
+  Container(UsersManagement, "Users Control", "Java, Spring", "Manages Users")
+  Container(TechSupport, "Technical Support", "Java, Spring", "Manages technical support tickets")
+
+  ContainerDb(DeviceManagementDataBase, "DataBase", "MongoDB", "Stores current state")
+  ContainerDb(DeviceScenarioDataBase, "DataBase", "MongoDB", "Stores scenaries")
+  ContainerDb(MonitoringDataBase, "DataBase", "Snoflake", "Stores analytics")
+  ContainerDb(UsersManagementDataBase, "DataBase", "PostgreSQL", "Stores Users")
+  ContainerDb(TechSupportDataBase, "DataBase", "MongoDB", "Stores Technical Support Tickets")
+}
+
+System_Ext(SmartDevices, "Third-Party Sensors", "External API for fitness data integration")
+
+Rel(user, ApiGateway, "Uses the system", $tags="dashedLine")
+Rel(admin, ApiGateway, "Manages the system", $tags="dashedLine")
+Rel(SmartDevices, ApiGateway, "Devices", $tags="dashedLine")
+
+Rel(ApiGateway, Queue, "Processes requests/Return Response", $tags="dashedLine")
+
+Rel(Queue, DeviceManagement, "Sends & receives messages", $tags="dashedLine")
+Rel(DeviceManagement, Queue, "Sends & receives messages", $tags="dashedLine")
+
+Rel(Queue, DeviceScenario, "Sends & receives messages", $tags="dashedLine")
+Rel(DeviceScenario, Queue, "Sends & receives messages", $tags="dashedLine")
+
+Rel(Queue, Monitoring, "Sends & receives messages", $tags="dashedLine")
+Rel(Monitoring, Queue, "Sends & receives messages", $tags="dashedLine")
+Rel(Monitoring, DeviceManagementDataBase, "Retrieves device states for report", $tags="dashedLine")
+
+Rel(Queue, UsersManagement, "Sends & receives messages", $tags="dashedLine")
+Rel(UsersManagement, Queue, "Sends & receives messages", $tags="dashedLine")
+
+Rel(Queue, TechSupport, "Sends & receives messages", $tags="dashedLine")
+Rel(TechSupport, Queue, "Sends & receives messages", $tags="dashedLine")
+
+
+Rel(DeviceManagement, DeviceManagementDataBase, "Sends & receives data", $tags="dashedLine")
+Rel(DeviceScenario, DeviceScenarioDataBase, "Sends & receives data", $tags="dashedLine")
+
+Rel(Monitoring, MonitoringDataBase, "Sends & receives data", $tags="dashedLine")
+
+Rel(UsersManagement, UsersManagementDataBase, "Sends & receives data", $tags="dashedLine")
+
+Rel(TechSupport, TechSupportDataBase, "Sends & receives data", $tags="dashedLine")
+
+
+@enduml

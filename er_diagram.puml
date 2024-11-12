@@ -1,0 +1,61 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+entity User {
+    * id: number
+    * email: string
+    * password: string
+    * created_at: timestamp
+    * modified_at: timestamp
+}
+
+entity UserHouse {
+    * id: number
+    * user_id: number
+    * house_id: number
+}
+
+entity Device {
+    * id: number
+    * type_id: number
+    * house_id: number
+    * serial_number: string
+    * status: string
+    * is_valid: boolean
+    * created_at: timestamp
+}
+
+entity DeviceType {
+    * id: number
+    * type: string
+}
+
+entity House {
+    * id: number
+    * name: string
+    * address: string
+    * created_at: timestamp
+}
+
+entity Module {
+    * id: number
+    * device_id: number
+    * name: string
+}
+
+entity Telemetry {
+    * id: number
+    * device_id: number
+    * metric: number
+    * created_at: timestamp
+}
+
+UserHouse }|-- User
+UserHouse }|-- House
+
+Device }|-- House
+Device }|-- DeviceType
+Telemetry }|-- Device
+Module }|-- Device
+
+@enduml

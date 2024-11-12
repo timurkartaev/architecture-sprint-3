@@ -52,6 +52,22 @@
 <img src="images/c4_context.png" alt="Context Diagram" width="80%" height="100%">
 
 
+## Задание 2. Проектирование микросервисной архитектуры
+
+### Визуализируйте архитектуры
+Тут буду благодарен за помощь, мне не до конца понятно, что нужно указать на диаграме кода. 
+
+Диаграмма контейнеров -> [C4_Container](C4_Container.puml)
+
+Диаграмма компонентов -> [C4_Component](C4_Component.puml)
+
+
+## Задание 3. Разработка ER-диаграммы
+
+<img src="images/er_diagram.png" alt="ER Diagram" width="80%" height="100%">
+
+ER Diagram -> [ER Diagram](er_diagram.puml)
+
 
 ## Конец 
 <hr />
