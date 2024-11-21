@@ -5,62 +5,60 @@ top to bottom direction
 
 !includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
 
-AddRelTag("dashedLine", $lineStyle = DashedLine())
-
-Person(user, "User", "A user of the fitness club system")
+Person(user, "User", "A user of the tepliydom")
 Person(admin, "Administrator", "An administrator managing the system")
-System(TepliyDom, "Tepliy Dom", "")
 
-Container_Boundary(TepliyDom, "FitLife System") {
-  Container(ApiGateway, "API Gateway", "Kong", "Handles all incoming requests")
-  SystemQueue(Queue, "Kafka Queue", "Kafka brokers managing all topics. Pub/Sub model")
+System(TepliyDom, "Tepliy Dom")
+System(webApp, "Web application", "Provides all the functionality of tepliydom to customers via  their web browser")
 
-  Container(DeviceManagement, "Device Control", "Java, Spring", "Manages devices")
-  Container(DeviceScenario, "Device Scenario", "Java, Spring", "Manages Device Scenario")
-  Container(Monitoring, "Analytics and Monitoring", "Java, Spring", "Allows monitoring")
-  Container(UsersManagement, "Users Control", "Java, Spring", "Manages Users")
-  Container(TechSupport, "Technical Support", "Java, Spring", "Manages technical support tickets")
-
-  ContainerDb(DeviceManagementDataBase, "DataBase", "MongoDB", "Stores current state")
-  ContainerDb(DeviceScenarioDataBase, "DataBase", "MongoDB", "Stores scenaries")
-  ContainerDb(MonitoringDataBase, "DataBase", "Snoflake", "Stores analytics")
-  ContainerDb(UsersManagementDataBase, "DataBase", "PostgreSQL", "Stores Users")
-  ContainerDb(TechSupportDataBase, "DataBase", "MongoDB", "Stores Technical Support Tickets")
-}
-
+System_Ext(externalDevices, "External devices", "Devices connected by user")
 System_Ext(SmartDevices, "Third-Party Sensors", "External API for fitness data integration")
 
-Rel(user, ApiGateway, "Uses the system", $tags="dashedLine")
-Rel(admin, ApiGateway, "Manages the system", $tags="dashedLine")
-Rel(SmartDevices, ApiGateway, "Devices", $tags="dashedLine")
+Container_Boundary(TepliyDom, "") {
+  Container(ApiGateway, "API Gateway", "Kong", "Handles incoming requests")
+  SystemQueue(Queue, "Kafka Queue", "Kafka brokers. Pub/Sub model")
 
-Rel(ApiGateway, Queue, "Processes requests/Return Response", $tags="dashedLine")
+  Container(DeviceManagement, "DeviceManagementService", "Java, Spring", "Manages devices")
+  Container(DeviceScenario, "DeviceScenarioService", "Java, Spring", "Manages Device Scenario")
+  Container(Monitoring, "MonitoringService", "Java, Spring", "Provides device monitoring")
+  Container(UsersManagement, "UserManagementService", "Java, Spring", "Manages Users")
+  Container(TechSupport, "TechnicalSupportService", "Java, Spring", "Manages support tickets")
+  Container(SensorTelemetryService, "SensorTelemetryService", "Java, Spring", "Manages support device telemetry")
 
-Rel(Queue, DeviceManagement, "Sends & receives messages", $tags="dashedLine")
-Rel(DeviceManagement, Queue, "Sends & receives messages", $tags="dashedLine")
-
-Rel(Queue, DeviceScenario, "Sends & receives messages", $tags="dashedLine")
-Rel(DeviceScenario, Queue, "Sends & receives messages", $tags="dashedLine")
-
-Rel(Queue, Monitoring, "Sends & receives messages", $tags="dashedLine")
-Rel(Monitoring, Queue, "Sends & receives messages", $tags="dashedLine")
-Rel(Monitoring, DeviceManagementDataBase, "Retrieves device states for report", $tags="dashedLine")
-
-Rel(Queue, UsersManagement, "Sends & receives messages", $tags="dashedLine")
-Rel(UsersManagement, Queue, "Sends & receives messages", $tags="dashedLine")
-
-Rel(Queue, TechSupport, "Sends & receives messages", $tags="dashedLine")
-Rel(TechSupport, Queue, "Sends & receives messages", $tags="dashedLine")
+  ContainerDb(DeviceManagementDataBase, "DataBase", "PostgreSQL", "Stores device information")
+  ContainerDb(DeviceScenarioDataBase, "DataBase", "PostgreSQL", "Stores scenario information")
+  ContainerDb(MonitoringDataBase, "DataBase", "GreenPlum", "Stores analytics reports")
+  ContainerDb(UsersManagementDataBase, "DataBase", "PostgreSQL", "Stores users information")
+  ContainerDb(TechSupportDataBase, "DataBase", "MongoDB", "Stores support tickets")
+  ContainerDb(SensorTelemetryServiceDatabase, "DataBase", "MongoDB", "Stores device telemetry information")
+}
 
 
-Rel(DeviceManagement, DeviceManagementDataBase, "Sends & receives data", $tags="dashedLine")
-Rel(DeviceScenario, DeviceScenarioDataBase, "Sends & receives data", $tags="dashedLine")
+Rel(user, webApp, "Visits teplyidom.com", "HTTPS")
+Rel(admin, webApp, "Visits teplyidom.com", "HTTPS")
+Rel(SmartDevices, ApiGateway, "Makes API calls", "JSON/HTTPS")
+Rel(webApp, ApiGateway, "Makes API calls", "JSON/HTTPS")
 
-Rel(Monitoring, MonitoringDataBase, "Sends & receives data", $tags="dashedLine")
+Rel(ApiGateway, Queue, "Reads from and writes to", "JSON/ASYNC")
+Rel(ApiGateway, DeviceManagement, "Makes API calls to", "JSON/HTTP")
+Rel(ApiGateway, DeviceScenario, "Makes API calls to", "JSON/HTTP")
+Rel(ApiGateway, UsersManagement, "Makes API calls to", "JSON/HTTP")
+Rel(ApiGateway, Monitoring, "Makes API calls to", "JSON/HTTP")
+Rel(ApiGateway, TechSupport, "Makes API calls to", "JSON/HTTP")
+Rel(ApiGateway, SensorTelemetryService, "Makes API calls to", "JSON/HTTP")
 
-Rel(UsersManagement, UsersManagementDataBase, "Sends & receives data", $tags="dashedLine")
+Rel(DeviceManagement, Queue, "Reads from and writes to", "JSON/ASYNC")
+Rel(DeviceScenario, Queue, "Reads from and writes to", "JSON/ASYNC")
+Rel(Monitoring, Queue, "Writes to", "JSON/ASYNC")
 
-Rel(TechSupport, TechSupportDataBase, "Sends & receives data", $tags="dashedLine")
+Rel(DeviceManagement, DeviceManagementDataBase, "Reads/Writes data", "SQL/TCP")
+Rel(DeviceScenario, DeviceScenarioDataBase, "Reads/Writes data", "SQL/TCP")
 
+Rel(DeviceManagement, externalDevices, "Run commands on device", "HTTPS")
 
+Rel(UsersManagement, UsersManagementDataBase, "Reads/Writes data", "SQL/TCP")
+Rel(Monitoring, MonitoringDataBase, "Reads/Writes data", "SQL/TCP")
+
+Rel(TechSupport, TechSupportDataBase, "Reads/Writes data", "SQL/TCP")
+Rel(SensorTelemetryService, SensorTelemetryServiceDatabase, "Reads/Writes data", "SQL/TCP")
 @enduml
