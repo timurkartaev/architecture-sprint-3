@@ -1,0 +1,53 @@
+asyncapi: 2.6.0
+info:
+  title: Teplyi Dom
+  description: Teplyi Dom
+  version: 1.0.0
+servers:
+  production:
+    url: api.tepliydom.com
+    protocol: kafka
+channels:
+  device-management:
+    subscribe:
+      summary: Device management
+      operationId: receiveDeviceCommand
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            id:
+              type: number
+            device_id:
+              type: number
+            user_id:
+              type: number
+            house_id:
+              type: number
+            command:
+              type: string
+            timestamp:
+              type: string
+    publish:
+      summary: Send device command status
+      operationId: sendDeviceCommand
+      message:
+        contentType: application/json
+        payload:
+          type: object
+          properties:
+            id:
+              type: number
+            device_id:
+              type: number
+            user_id:
+              type: number
+            house_id:
+              type: number
+            command:
+              type: string
+            status:
+              type: string
+            timestamp:
+              type: string
